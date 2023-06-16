@@ -1,4 +1,6 @@
 import 'package:banao_task1/home/home.dart';
+import 'package:banao_task1/lessons/lessons.dart';
+import 'package:banao_task1/programs/programs.dart';
 import 'package:flutter/material.dart';
 
 class Homepage extends StatefulWidget {
@@ -14,8 +16,8 @@ class _HomepageState extends State<Homepage> {
 
   final List<Widget> _pagesfooter = [
     Home(),
-    PlaceholderWidget(color: Colors.red),
-    PlaceholderWidget(color: Colors.green),
+    Lessons(),
+    Programs(),
     PlaceholderWidget(color: Colors.yellow),
     PlaceholderWidget(color: Colors.orange),
   ];
