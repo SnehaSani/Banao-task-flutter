@@ -5,18 +5,20 @@ class Card3 extends StatelessWidget {
   final String title;
   final String description;
   final String sub;
+  final String lock;
 
   const Card3({
     required this.imageUrl,
     required this.title,
     required this.description,
     required this.sub,
+    required this.lock,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 10),
+      padding: const EdgeInsets.only(left: 10),
       child: Container(
         width: 240,
         child: Card(
@@ -65,7 +67,7 @@ class Card3 extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        Icon(Icons.lock_outline_rounded,color: Color(0xff6D747A),),
+                        Icon(lock=="false"?Icons.lock_open_rounded:Icons.lock_outline_rounded,color: Color(0xff6D747A),),
                       ],
                     ),
                   ],

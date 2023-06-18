@@ -1,6 +1,7 @@
 import 'package:banao_task1/home/card1.dart';
 import 'package:banao_task1/home/card2.dart';
 import 'package:banao_task1/home/card3.dart';
+import 'package:banao_task1/services/remote_service.dart';
 import 'package:flutter/material.dart';
 import 'package:banao_task1/home/curved_rec.dart';
 
@@ -12,6 +13,34 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  List lessons = [];
+  List programs = [];
+  var isLoadingLessons=true;
+  var isLoadingPrograms=true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    final responseLesson= await RemoteService.fetchData('https://632017e19f82827dcf24a655.mockapi.io/api/lessons');
+    final responseProgram= await RemoteService.fetchData('https://632017e19f82827dcf24a655.mockapi.io/api/programs');
+    if(responseLesson!=null && responseProgram!=null){
+      setState(() {
+        lessons=responseLesson;
+        programs=responseProgram;
+      });
+    }
+    else{
+      showErrorMsg('Unable to Fetch Data');
+    }
+    setState(() {
+      isLoadingLessons=false;
+      isLoadingPrograms=false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,18 +119,31 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 SizedBox(height: 20,),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        SizedBox(width: 10,),
-                        Card1(imageUrl: 'assets/images/card1.png', title: 'LIFESTYLE', description: 'A complete guide for your new born baby', sub: "16 lessons"),
-                        Card1(imageUrl: 'assets/images/card1.png', title: 'WORKING PARENTS', description: 'Understanding of human behaviour', sub: "12 lessons"),
-                      ],
+                Visibility(
+                  visible: isLoadingPrograms,
+                  child: Center(child: CircularProgressIndicator()),
+                  replacement: Container(
+                    height: 250,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: programs?.length,
+                      itemBuilder: (ctx, index) {
+                        final program = programs[index] as Map;
+                        return Card1(imageUrl: 'assets/images/card1.png', title: '${program['category']}', description: "${program['name']}",sub:'${program['lesson']} lessons');
+                      },
                     ),
-
+                  ),
                 ),
-
+                // SingleChildScrollView(
+                //   scrollDirection: Axis.horizontal,
+                //     child: Row(
+                //       children: [
+                //         SizedBox(width: 10,),
+                //         Card1(imageUrl: 'assets/images/card1.png', title: 'LIFESTYLE', description: 'A complete guide for your new born baby', sub: "16 lessons"),
+                //         Card1(imageUrl: 'assets/images/card1.png', title: 'WORKING PARENTS', description: 'Understanding of human behaviour', sub: "12 lessons"),
+                //       ],
+                //     ),
+                // ),
                 SizedBox(height: 20,),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -150,17 +192,32 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 SizedBox(height: 20,),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      SizedBox(width: 10,),
-                      Card3(imageUrl: 'assets/images/card2.png', title: 'BABYCARE', description: 'Understanding of human behaviour', sub: "3 min"),
-                      Card3(imageUrl: 'assets/images/card2.png', title: 'BABYCARE', description: 'Understanding of human behaviour', sub: "1 min"),
-                    ],
+                Visibility(
+                  visible: isLoadingLessons,
+                  child: Center(child: CircularProgressIndicator()),
+                  replacement: Container(
+                    height: 300,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: lessons?.length,
+                      itemBuilder: (ctx, index) {
+                        final lesson = lessons[index] as Map;
+                        return Card3(imageUrl: 'assets/images/card2.png', title: '${lesson['category']}', description: '${lesson['name']}', sub: "${lesson['duration']} min", lock: "${lesson['locked']}");
+                      },
+                    ),
                   ),
-
                 ),
+                // SingleChildScrollView(
+                //   scrollDirection: Axis.horizontal,
+                //   child: Row(
+                //     children: [
+                //       SizedBox(width: 10,),
+                //       Card3(imageUrl: 'assets/images/card2.png', title: 'BABYCARE', description: 'Understanding of human behaviour', sub: "3 min"),
+                //       Card3(imageUrl: 'assets/images/card2.png', title: 'BABYCARE', description: 'Understanding of human behaviour', sub: "1 min"),
+                //     ],
+                //   ),
+                //
+                // ),
               ],
             ),
           ),
@@ -168,4 +225,15 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+
+  void showSuccessMsg(String msg){
+    final snackBar=SnackBar(content: Text(msg));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void showErrorMsg(String msg){
+    final snackBar=SnackBar(content: Text(msg,style: TextStyle(color: Colors.white),),backgroundColor: Colors.red,);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
 }

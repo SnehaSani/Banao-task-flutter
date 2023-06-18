@@ -18,12 +18,6 @@ class _ProgramsState extends State<Programs> {
     fetchData();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    // Cancel any ongoing operations, such as timers or animations
-  }
-
   Future<void> fetchData() async {
     final response= await RemoteService.fetchData('https://632017e19f82827dcf24a655.mockapi.io/api/programs');
     if(response!=null){
